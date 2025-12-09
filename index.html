@@ -1,71 +1,344 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download Guevara APK</title>
+    <title>Guevara.B.52 | Secure Android Download</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Orbitron:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
+        :root {
+            --primary: #00f3ff;
+            --secondary: #bd00ff;
+            --bg-dark: #050510;
+            --glass: rgba(10, 10, 20, 0.7);
+            --border: rgba(0, 243, 255, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-            background-image: url('https://github.com/Guevara-B52/Guevara.B.52/blob/main/background.jpg?raw=true');
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            /* Reduced opacity for better background visibility */
+            background-image: linear-gradient(rgba(5, 5, 16, 0.4), rgba(5, 5, 16, 0.8)), url('background.jpg');
             background-size: cover;
             background-position: center;
-            color: white;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
             overflow: hidden;
+            position: relative;
         }
-        .content {
-            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better readability */
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            backdrop-filter: blur(10px); /* Blur effect */
+
+        /* Tech Grid Background Animation */
+        .grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background-image:
+                linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
         }
-        .download-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            color: white;
-            background-color: rgba(0, 123, 255, 0.8); /* Semi-transparent background */
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-        .download-button:hover {
-            background-color: rgba(0, 123, 255, 1);
-        }
-        h1 {
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-            margin: 0 0 20px 0;
-        }
-        img {
-            max-width: 100%; /* Responsive image */
-            height: auto; /* Maintain aspect ratio */
-            margin-bottom: 20px;
-        }
-        @media (max-width: 600px) {
-            .download-button {
-                padding: 12px 24px;
-                font-size: 18px;
+
+        @keyframes gridMove {
+            0% {
+                transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px);
             }
+
+            100% {
+                transform: perspective(500px) rotateX(60deg) translateY(50px) translateZ(-200px);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 3rem;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.15);
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* Glitch Badge */
+        .badge {
+            display: inline-block;
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            border: 1px solid var(--primary);
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .version {
+            color: #8892b0;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Icon Container */
+        .icon-box {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+            font-size: 3rem;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+            position: relative;
+        }
+
+        .icon-box::before {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 25px;
+            border: 1px dashed var(--secondary);
+            animation: spin 10s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Tech Button */
+        .download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--primary), #00a8ff);
+            color: #000;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
+        }
+
+        .download-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .download-btn:hover::after {
+            left: 100%;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 2px solid var(--secondary);
+        }
+
+        .info-label {
+            font-size: 0.7rem;
+            color: #8892b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #556;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile tweaks */
+        @media(max-width: 480px) {
             h1 {
-                font-size: 24px;
+                font-size: 1.8rem;
+            }
+
+            .container {
+                padding: 2rem 1.5rem;
+                width: 95%;
             }
         }
     </style>
 </head>
+
 <body>
 
-    <div class="content">
-        <h1>Guevara.B.52 App</h1>
-        <img src="https://duckduckgo.com/i/b2ea8d6e08591dcf.png" alt="Android Icon">
-        <a href="https://raw.githubusercontent.com/Guevara-B52/Guevara.B.52/refs/heads/main/Guevara.B.52.apk" class="download-button" download>Download APK</a>
+    <div class="grid-bg"></div>
+
+    <div class="container">
+        <div class="badge">SECURE DOWNLOAD</div>
+
+        <div class="icon-box">
+            <i class="fab fa-android"></i>
+        </div>
+
+        <h1>Guevara.B.52</h1>
+        <div class="version" id="app-version-display">Version Loading...</div>
+
+        <a href="https://raw.githubusercontent.com/Guevara-B52/Guevara.B.52/refs/heads/main/Guevara.B.52.apk"
+            class="download-btn" download>
+            <i class="fas fa-download"></i> Download APK
+        </a>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Platform</div>
+                <div class="info-value">Android</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Size</div>
+                <div class="info-value" id="app-size">Checking...</div>
+            </div>
+        </div>
+
+        <footer>
+            &copy; 2024 Guevara Project. All rights reserved.
+        </footer>
     </div>
 
+    <script>
+        const APK_URL = 'https://raw.githubusercontent.com/Guevara-B52/Guevara.B.52/refs/heads/main/Guevara.B.52.apk';
+        // Obfuscated endpoint for security
+        const _k9x = "aHR0cHM6Ly9ndWV2YXJhLTk1ZGI1LWRlZmF1bHQtcnRkYi5hc2lhLXNvdXRoZWFzdDEuZmlyZWJhc2VkYXRhYmFzZS5hcHAvYXBwL2xpbmtfdmVyc2lvbi5qc29u";
+
+        // 1. Fetch Version from Secure Endpoint
+        try {
+            fetch(atob(_k9x))
+                .then(response => {
+                    if (!response.ok) throw new Error("Net Err");
+                    return response.json();
+                })
+                .then(data => {
+                    // Firebase returns the raw string e.g. "4.1-9Dec Build 1"
+                    if (data) {
+                        document.getElementById('app-version-display').textContent = `Version ${data}`;
+                    }
+                })
+                .catch(err => {
+                    console.warn('V-Check failed', err);
+                    document.getElementById('app-version-display').textContent = "Version Check Failed";
+                });
+        } catch (e) {
+            console.log("Init err");
+        }
+
+        // 2. Fetch File Size from APK Headers
+        fetch(APK_URL, { method: 'HEAD' })
+            .then(response => {
+                if (response.ok) {
+                    const bytes = response.headers.get('content-length');
+                    if (bytes) {
+                        const mb = (bytes / (1024 * 1024)).toFixed(1);
+                        document.getElementById('app-size').textContent = `${mb} MB`;
+                    } else {
+                        document.getElementById('app-size').textContent = "Unknown";
+                    }
+                } else {
+                    document.getElementById('app-size').textContent = "Unknown";
+                }
+            })
+            .catch(err => {
+                console.warn('Size check failed:', err);
+                document.getElementById('app-size').textContent = "Unknown";
+            });
+    </script>
+
 </body>
+
 </html>
