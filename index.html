@@ -5,12 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guevara.B.52 | Secure Android Download</title>
+    <link rel="icon" type="image/png" href="app_logo.png">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Orbitron:wght@400;500;700&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -44,6 +46,11 @@
             color: #fff;
             overflow: hidden;
             position: relative;
+        }
+
+        body.rtl {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
         }
 
         /* Tech Grid Background Animation */
@@ -96,7 +103,7 @@
             color: var(--primary);
             padding: 0.3rem 0.8rem;
             border-radius: 50px;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Orbitron', 'Cairo', sans-serif;
             font-size: 0.8rem;
             letter-spacing: 2px;
             border: 1px solid var(--primary);
@@ -105,7 +112,7 @@
         }
 
         h1 {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Orbitron', 'Cairo', sans-serif;
             font-size: 2.2rem;
             margin-bottom: 0.5rem;
             background: linear-gradient(90deg, #fff, var(--primary));
@@ -130,19 +137,30 @@
             align-items: center;
             justify-content: center;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            border-radius: 50%;
+            /* Circle for the logo */
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--primary);
             font-size: 3rem;
             box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
             position: relative;
+            overflow: hidden;
+            padding: 15px;
+            /* Added padding as requested */
+        }
+
+        .app-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .icon-box::before {
             content: '';
             position: absolute;
             inset: -5px;
-            border-radius: 25px;
+            border-radius: 50%;
             border: 1px dashed var(--secondary);
             animation: spin 10s linear infinite;
         }
@@ -164,7 +182,7 @@
             background: linear-gradient(45deg, var(--primary), #00a8ff);
             color: #000;
             text-decoration: none;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Orbitron', 'Cairo', sans-serif;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -204,11 +222,20 @@
             text-align: left;
         }
 
+        body.rtl .info-grid {
+            text-align: right;
+        }
+
         .info-item {
             background: rgba(255, 255, 255, 0.03);
             padding: 1rem;
             border-radius: 8px;
             border-left: 2px solid var(--secondary);
+        }
+
+        body.rtl .info-item {
+            border-left: none;
+            border-right: 2px solid var(--secondary);
         }
 
         .info-label {
@@ -220,7 +247,7 @@
         }
 
         .info-value {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Orbitron', 'Cairo', sans-serif;
             font-size: 0.9rem;
             color: #fff;
         }
@@ -229,6 +256,35 @@
             margin-top: 2rem;
             font-size: 0.75rem;
             color: #556;
+        }
+
+        /* Language Toggle */
+        .lang-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 100;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .lang-toggle:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* Adjust for RTL layout */
+        body.rtl .lang-toggle {
+            right: auto;
+            left: 20px;
         }
 
         @keyframes fadeIn {
@@ -261,43 +317,155 @@
 
     <div class="grid-bg"></div>
 
+    <button id="lang-toggle" class="lang-toggle">
+        <i class="fas fa-globe"></i> <span id="lang-text">العربية</span>
+    </button>
+
     <div class="container">
-        <div class="badge">SECURE DOWNLOAD</div>
+        <div class="badge" data-i18n="badge">SECURE DOWNLOAD</div>
 
         <div class="icon-box">
-            <i class="fab fa-android"></i>
+            <!-- Updated to use the requested image -->
+            <img src="app_logo.png" alt="Guevara B52 Logo" class="app-logo">
         </div>
 
         <h1>Guevara.B.52</h1>
-        <div class="version" id="app-version-display">Version Loading...</div>
+        <div class="version" id="app-version-display" data-i18n="versionLoading">Version Loading...</div>
 
         <a href="https://raw.githubusercontent.com/Guevara-B52/Guevara.B.52/refs/heads/main/Guevara.B.52.apk"
             class="download-btn" download>
-            <i class="fas fa-download"></i> Download APK
+            <i class="fas fa-download"></i> <span data-i18n="download">Download APK</span>
         </a>
 
         <div class="info-grid">
             <div class="info-item">
-                <div class="info-label">Platform</div>
+                <div class="info-label" data-i18n="platform">Platform</div>
                 <div class="info-value">Android</div>
             </div>
             <div class="info-item">
-                <div class="info-label">Size</div>
-                <div class="info-value" id="app-size">Checking...</div>
+                <div class="info-label" data-i18n="size">Size</div>
+                <div class="info-value" id="app-size" data-i18n="checking">Checking...</div>
             </div>
         </div>
 
-        <footer>
-            &copy; 2024 Guevara Project. All rights reserved.
+        <footer data-i18n="footer">
+            &copy; 2025 Guevara VIP. All rights reserved.
         </footer>
     </div>
 
     <script>
+        // --- Internationalization Logic ---
+        const translations = {
+            en: {
+                badge: "SECURE DOWNLOAD",
+                download: "Download APK",
+                platform: "Platform",
+                size: "Size",
+                footer: "© 2025 Guevara VIP. All rights reserved.",
+                versionLoading: "Version Loading...",
+                checking: "Checking...",
+                unknown: "Unknown",
+                checkFailed: "Version Check Failed",
+                langBtn: "العربية"
+            },
+            ar: {
+                badge: "تحميل آمن",
+                download: "تحميل APK",
+                platform: "المنصة",
+                size: "الحجم",
+                footer: "© 2025 Guevara VIP. جميع الحقوق محفوظة.",
+                versionLoading: "جارٍ تحميل الإصدار...",
+                checking: "جارٍ التحقق...",
+                unknown: "غير معروف",
+                checkFailed: "فشل التحقق من الإصدار",
+                langBtn: "English"
+            }
+        };
+
+        let currentLang = 'en';
+
+        // Detect Language
+        function detectLanguage() {
+            const savedLang = localStorage.getItem('guevara_lang');
+            if (savedLang) return savedLang;
+
+            const userLang = navigator.language || navigator.userLanguage;
+            if (userLang.startsWith('ar')) return 'ar';
+            return 'en';
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+
+            // Handle Direction
+            const body = document.body;
+            if (lang === 'ar') {
+                body.classList.add('rtl');
+                document.documentElement.dir = 'rtl';
+            } else {
+                body.classList.remove('rtl');
+                document.documentElement.dir = 'ltr';
+            }
+
+            // Update Text Content
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // Update Special Dynamic Elements if needed
+            updateDynamicContent(lang);
+
+            // Update Toggle Button Text
+            document.getElementById('lang-text').textContent = translations[lang]['langBtn'];
+
+            // Save Preference
+            localStorage.setItem('guevara_lang', lang);
+        }
+
+        // Helper to refresh dynamic data texts (Version/Size) when language switches
+        // We store the raw values in data attributes so we can re-format them
+        function updateDynamicContent(lang) {
+            const versionEl = document.getElementById('app-version-display');
+            const sizeEl = document.getElementById('app-size');
+
+            // Re-apply version text if we have the raw version
+            if (versionEl.dataset.rawVersion) {
+                const prefix = lang === 'ar' ? 'إصدار' : 'Version';
+                versionEl.textContent = `${prefix} ${versionEl.dataset.rawVersion}`;
+            } else if (versionEl.dataset.error) {
+                versionEl.textContent = translations[lang]['checkFailed'];
+            }
+
+            // Re-apply size text if we have raw size
+            if (sizeEl.dataset.rawSize) {
+                // Size is usually universal (MB), but we can format if needed. 
+                // Currently just keeping "X.X MB" as it's standard.
+                sizeEl.textContent = sizeEl.dataset.rawSize;
+            } else if (sizeEl.dataset.error) {
+                sizeEl.textContent = translations[lang]['unknown'];
+            }
+        }
+
+        // Initialize Language
+        setLanguage(detectLanguage());
+
+        // Toggle Event
+        document.getElementById('lang-toggle').addEventListener('click', () => {
+            const newLang = currentLang === 'en' ? 'ar' : 'en';
+            setLanguage(newLang);
+        });
+
+
+        // --- Existing App Logic ---
+
         const APK_URL = 'https://raw.githubusercontent.com/Guevara-B52/Guevara.B.52/refs/heads/main/Guevara.B.52.apk';
-        // Obfuscated endpoint for security
         const _k9x = "aHR0cHM6Ly9ndWV2YXJhLTk1ZGI1LWRlZmF1bHQtcnRkYi5hc2lhLXNvdXRoZWFzdDEuZmlyZWJhc2VkYXRhYmFzZS5hcHAvYXBwL2xpbmtfdmVyc2lvbi5qc29u";
 
-        // 1. Fetch Version from Secure Endpoint
+        // 1. Fetch Version
         try {
             fetch(atob(_k9x))
                 .then(response => {
@@ -305,37 +473,46 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Firebase returns the raw string e.g. "4.1-9Dec Build 1"
                     if (data) {
-                        document.getElementById('app-version-display').textContent = `Version ${data}`;
+                        const versionEl = document.getElementById('app-version-display');
+                        versionEl.dataset.rawVersion = data; // Store raw for language switching
+                        const prefix = currentLang === 'ar' ? 'إصدار' : 'Version';
+                        versionEl.textContent = `${prefix} ${data}`;
                     }
                 })
                 .catch(err => {
                     console.warn('V-Check failed', err);
-                    document.getElementById('app-version-display').textContent = "Version Check Failed";
+                    const versionEl = document.getElementById('app-version-display');
+                    versionEl.dataset.error = "true";
+                    versionEl.textContent = translations[currentLang]['checkFailed'];
                 });
         } catch (e) {
             console.log("Init err");
         }
 
-        // 2. Fetch File Size from APK Headers
+        // 2. Fetch File Size
         fetch(APK_URL, { method: 'HEAD' })
             .then(response => {
                 if (response.ok) {
                     const bytes = response.headers.get('content-length');
                     if (bytes) {
                         const mb = (bytes / (1024 * 1024)).toFixed(1);
-                        document.getElementById('app-size').textContent = `${mb} MB`;
+                        const sizeText = `${mb} MB`;
+                        const sizeEl = document.getElementById('app-size');
+                        sizeEl.dataset.rawSize = sizeText;
+                        sizeEl.textContent = sizeText;
                     } else {
-                        document.getElementById('app-size').textContent = "Unknown";
+                        throw new Error("No size");
                     }
                 } else {
-                    document.getElementById('app-size').textContent = "Unknown";
+                    throw new Error("Net Err");
                 }
             })
             .catch(err => {
                 console.warn('Size check failed:', err);
-                document.getElementById('app-size').textContent = "Unknown";
+                const sizeEl = document.getElementById('app-size');
+                sizeEl.dataset.error = "true";
+                sizeEl.textContent = translations[currentLang]['unknown'];
             });
     </script>
 
