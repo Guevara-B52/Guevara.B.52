@@ -527,7 +527,7 @@
         // 1. Fetch App Data (Link & Version)
         function initAppData() {
             try {
-                fetch(atob(_endpoint))
+                fetch(atob(_endpoint) + "?t=" + Date.now())
                     .then(response => {
                         if (!response.ok) throw new Error("Net Err");
                         return response.json();
@@ -619,10 +619,12 @@
         });
 
         function startDownload() {
-            // Telegram Fallback: Direct Download to ensure file saving
-            // (Telegram Webview often inhibits Blob saving)
+            // Append cache buster to the URL at the time of download
+            const cachedBustedUrl = APK_URL + (APK_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
+
+            // Telegram Fallback: Force External Browser to ensure file saving
             if (isTelegram()) {
-                window.location.href = APK_URL;
+                window.open(cachedBustedUrl, '_blank');
                 return;
             }
 
@@ -639,7 +641,7 @@
             progressStatus.textContent = translations[currentLang]['downloading'];
 
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', APK_URL, true);
+            xhr.open('GET', cachedBustedUrl, true);
             xhr.responseType = 'blob';
 
             let startTime = Date.now();
