@@ -605,7 +605,7 @@
         // Helper to detect Telegram User Agent
         function isTelegram() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
-            return (ua.indexOf("Telegram") > -1);
+            return (ua.indexOf("Telegram") > -1) || (ua.indexOf("Telegraph") > -1);
         }
 
         // --- Download Logic ---
