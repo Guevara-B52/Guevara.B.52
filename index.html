@@ -390,13 +390,6 @@
                 MB/s</div>
         </div>
 
-        <!-- Fallback Link -->
-        <div id="fallback-container" style="margin-top: 1rem; font-size: 0.8rem; display: none;">
-            <a href="#" id="fallback-btn" style="color: #8892b0; text-decoration: underline; cursor: pointer;">
-                <span data-i18n="fallback">Download issue? Open in Browser</span>
-            </a>
-        </div>
-
         <div class="info-grid">
             <div class="info-item">
                 <div class="info-label" data-i18n="platform">Platform</div>
@@ -430,8 +423,7 @@
                 downloading: "Downloading...",
                 complete: "Download Complete!",
                 error: "Download Failed",
-                savePrompt: "Saving File...",
-                fallback: "Download issue? Open in Browser"
+                savePrompt: "Saving File..."
             },
             ar: {
                 badge: "تحميل آمن",
@@ -447,8 +439,7 @@
                 downloading: "جاري التحميل...",
                 complete: "تم التحميل!",
                 error: "فشل التحميل",
-                savePrompt: "جاري حفظ الملف...",
-                fallback: "مشكلة في التحميل؟ فتح في المتصفح"
+                savePrompt: "جاري حفظ الملف..."
             }
         };
 
@@ -536,7 +527,7 @@
         // 1. Fetch App Data (Link & Version)
         function initAppData() {
             try {
-                fetch(atob(_endpoint) + "?t=" + Date.now())
+                fetch(atob(_endpoint))
                     .then(response => {
                         if (!response.ok) throw new Error("Net Err");
                         return response.json();
@@ -611,17 +602,6 @@
         // Initialize
         initAppData();
 
-        // Make fallback visible after a moment or immediately
-        // setTimeout(() => {
-        //     document.getElementById('fallback-container').style.display = 'block';
-        // }, 1000);
-
-        // Helper to detect Telegram User Agent
-        function isTelegram() {
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            return (ua.indexOf("Telegram") > -1) || (ua.indexOf("Telegraph") > -1);
-        }
-
         // --- Download Logic ---
         document.getElementById('download-btn').addEventListener('click', function (e) {
             e.preventDefault();
@@ -632,23 +612,7 @@
             startDownload();
         });
 
-        document.getElementById('fallback-btn').addEventListener('click', function (e) {
-            e.preventDefault();
-            if (!APK_URL) return;
-            const cachedBustedUrl = APK_URL + (APK_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
-            window.open(cachedBustedUrl, '_blank');
-        });
-
         function startDownload() {
-            // Append cache buster to the URL at the time of download
-            const cachedBustedUrl = APK_URL + (APK_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
-
-            // Telegram Fallback: Force External Browser to ensure file saving
-            if (isTelegram()) {
-                window.open(cachedBustedUrl, '_blank');
-                return;
-            }
-
             const btn = document.getElementById('download-btn');
             const progressContainer = document.getElementById('progress-container');
             const progressBar = document.getElementById('progress-bar-fill');
@@ -662,7 +626,7 @@
             progressStatus.textContent = translations[currentLang]['downloading'];
 
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', cachedBustedUrl, true);
+            xhr.open('GET', APK_URL, true);
             xhr.responseType = 'blob';
 
             let startTime = Date.now();
@@ -714,10 +678,6 @@
                             btn.style.display = 'flex';
                             progressBar.style.width = '0%';
                         }, 3000);
-
-                        // Show fallback in case saving failed silently (e.g. WebView restrictions)
-                        document.getElementById('fallback-container').style.display = 'block';
-
                     }, 500);
                 } else {
                     handleError();
@@ -736,9 +696,6 @@
                     btn.style.display = 'flex';
                     progressStatus.style.color = 'var(--primary)'; // Reset color
                 }, 3000);
-
-                // Show fallback on error too
-                document.getElementById('fallback-container').style.display = 'block';
             }
 
             xhr.send();
