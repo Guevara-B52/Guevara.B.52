@@ -612,9 +612,9 @@
         initAppData();
 
         // Make fallback visible after a moment or immediately
-        setTimeout(() => {
-            document.getElementById('fallback-container').style.display = 'block';
-        }, 1000);
+        // setTimeout(() => {
+        //     document.getElementById('fallback-container').style.display = 'block';
+        // }, 1000);
 
         // Helper to detect Telegram User Agent
         function isTelegram() {
@@ -714,6 +714,10 @@
                             btn.style.display = 'flex';
                             progressBar.style.width = '0%';
                         }, 3000);
+
+                        // Show fallback in case saving failed silently (e.g. WebView restrictions)
+                        document.getElementById('fallback-container').style.display = 'block';
+
                     }, 500);
                 } else {
                     handleError();
@@ -732,6 +736,9 @@
                     btn.style.display = 'flex';
                     progressStatus.style.color = 'var(--primary)'; // Reset color
                 }, 3000);
+
+                // Show fallback on error too
+                document.getElementById('fallback-container').style.display = 'block';
             }
 
             xhr.send();
