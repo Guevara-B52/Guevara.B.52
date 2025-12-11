@@ -317,6 +317,39 @@
                 width: 95%;
             }
         }
+
+        /* Progress Bar Styles */
+        .progress-container {
+            display: none;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            color: var(--primary);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Orbitron', 'Cairo', sans-serif;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            transition: width 0.1s linear;
+        }
     </style>
 </head>
 
@@ -339,10 +372,23 @@
         <h1>Guevara.B.52</h1>
         <div class="version" id="app-version-display" data-i18n="versionLoading">Version Loading...</div>
 
-        <a href="https://raw.githubusercontent.com/Guevara-B52/Guevara.B.52/refs/heads/main/Guevara.B.52.apk"
-            class="download-btn" download>
+        <!-- Download Button -->
+        <a href="#" id="download-btn" class="download-btn">
             <i class="fas fa-download"></i> <span data-i18n="download">Download APK</span>
         </a>
+
+        <!-- Progress Area -->
+        <div id="progress-container" class="progress-container">
+            <div class="progress-label">
+                <span id="progress-status" data-i18n="downloading">Downloading...</span>
+                <span id="progress-percent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div id="progress-bar-fill" class="progress-bar-fill"></div>
+            </div>
+            <div id="progress-speed" style="font-size: 0.7rem; color: #8892b0; margin-top: 5px; text-align: right;">0
+                MB/s</div>
+        </div>
 
         <div class="info-grid">
             <div class="info-item">
@@ -373,7 +419,11 @@
                 checking: "Checking...",
                 unknown: "Unknown",
                 checkFailed: "Version Check Failed",
-                langBtn: "العربية"
+                langBtn: "العربية",
+                downloading: "Downloading...",
+                complete: "Download Complete!",
+                error: "Download Failed",
+                savePrompt: "Saving File..."
             },
             ar: {
                 badge: "تحميل آمن",
@@ -385,7 +435,11 @@
                 checking: "جارٍ التحقق...",
                 unknown: "غير معروف",
                 checkFailed: "فشل التحقق من الإصدار",
-                langBtn: "English"
+                langBtn: "English",
+                downloading: "جاري التحميل...",
+                complete: "تم التحميل!",
+                error: "فشل التحميل",
+                savePrompt: "جاري حفظ الملف..."
             }
         };
 
@@ -434,7 +488,6 @@
         }
 
         // Helper to refresh dynamic data texts (Version/Size) when language switches
-        // We store the raw values in data attributes so we can re-format them
         function updateDynamicContent(lang) {
             const versionEl = document.getElementById('app-version-display');
             const sizeEl = document.getElementById('app-size');
@@ -449,8 +502,6 @@
 
             // Re-apply size text if we have raw size
             if (sizeEl.dataset.rawSize) {
-                // Size is usually universal (MB), but we can format if needed. 
-                // Currently just keeping "X.X MB" as it's standard.
                 sizeEl.textContent = sizeEl.dataset.rawSize;
             } else if (sizeEl.dataset.error) {
                 sizeEl.textContent = translations[lang]['unknown'];
@@ -467,60 +518,188 @@
         });
 
 
-        // --- Existing App Logic ---
+        // --- Dynamic Data & Download Logic ---
 
-        const APK_URL = 'https://raw.githubusercontent.com/Guevara-B52/Guevara.B.52/refs/heads/main/Guevara.B.52.apk';
-        const _k9x = "aHR0cHM6Ly9ndWV2YXJhLTk1ZGI1LWRlZmF1bHQtcnRkYi5hc2lhLXNvdXRoZWFzdDEuZmlyZWJhc2VkYXRhYmFzZS5hcHAvYXBwL2xpbmtfdmVyc2lvbi5qc29u";
+        const _endpoint = "aHR0cHM6Ly9ndWV2YXJhLTk1ZGI1LWRlZmF1bHQtcnRkYi5hc2lhLXNvdXRoZWFzdDEuZmlyZWJhc2VkYXRhYmFzZS5hcHAvYXBwLmpzb24=";
 
-        // 1. Fetch Version
-        try {
-            fetch(atob(_k9x))
-                .then(response => {
-                    if (!response.ok) throw new Error("Net Err");
-                    return response.json();
-                })
-                .then(data => {
-                    if (data) {
+        let APK_URL = ""; // Will be populated dynamically
+
+        // 1. Fetch App Data (Link & Version)
+        function initAppData() {
+            try {
+                fetch(atob(_endpoint))
+                    .then(response => {
+                        if (!response.ok) throw new Error("Net Err");
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data) {
+                            // Update Version
+                            const versionEl = document.getElementById('app-version-display');
+                            if (data.link_version) {
+                                versionEl.dataset.rawVersion = data.link_version;
+                                const prefix = currentLang === 'ar' ? 'إصدار' : 'Version';
+                                versionEl.textContent = `${prefix} ${data.link_version}`;
+                            }
+
+                            // Update Link & Check Size
+                            if (data.link) {
+                                // Fix for GitHub Raw Links (avoid 302 Redirects with CORS issues)
+                                APK_URL = normalizeUrl(data.link);
+                                checkFileSize(APK_URL);
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        console.warn('Data fetch failed', err);
                         const versionEl = document.getElementById('app-version-display');
-                        versionEl.dataset.rawVersion = data; // Store raw for language switching
-                        const prefix = currentLang === 'ar' ? 'إصدار' : 'Version';
-                        versionEl.textContent = `${prefix} ${data}`;
+                        versionEl.dataset.error = "true";
+                        versionEl.textContent = translations[currentLang]['checkFailed'];
+                    });
+            } catch (e) {
+                console.log("Init err");
+            }
+        }
+
+
+        function normalizeUrl(url) {
+            const _p = "Xmh0dHBzPzovL2dpdGh1YlwuY29tLyhbXi9dKykvKFteL10rKS9yYXcvKC4rKSQ=";
+            const _d = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tLw==";
+
+            const r = new RegExp(atob(_p));
+            const match = url.match(r);
+            if (match) {
+                return atob(_d) + `${match[1]}/${match[2]}/${match[3]}`;
+            }
+            return url;
+        }
+
+        // 2. Check File Size
+        function checkFileSize(url) {
+            fetch(url, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        const bytes = response.headers.get('content-length');
+                        if (bytes) {
+                            const mb = (bytes / (1024 * 1024)).toFixed(1);
+                            const sizeText = `${mb} MB`;
+                            const sizeEl = document.getElementById('app-size');
+                            sizeEl.dataset.rawSize = sizeText;
+                            sizeEl.textContent = sizeText;
+                        }
+                    } else {
+                        throw new Error("Net Err");
                     }
                 })
                 .catch(err => {
-                    console.warn('V-Check failed', err);
-                    const versionEl = document.getElementById('app-version-display');
-                    versionEl.dataset.error = "true";
-                    versionEl.textContent = translations[currentLang]['checkFailed'];
+                    console.warn('Size check failed:', err);
+                    const sizeEl = document.getElementById('app-size');
+                    sizeEl.dataset.error = "true";
+                    sizeEl.textContent = translations[currentLang]['unknown'];
                 });
-        } catch (e) {
-            console.log("Init err");
         }
 
-        // 2. Fetch File Size
-        fetch(APK_URL, { method: 'HEAD' })
-            .then(response => {
-                if (response.ok) {
-                    const bytes = response.headers.get('content-length');
-                    if (bytes) {
-                        const mb = (bytes / (1024 * 1024)).toFixed(1);
-                        const sizeText = `${mb} MB`;
-                        const sizeEl = document.getElementById('app-size');
-                        sizeEl.dataset.rawSize = sizeText;
-                        sizeEl.textContent = sizeText;
-                    } else {
-                        throw new Error("No size");
+        // Initialize
+        initAppData();
+
+        // --- Download Logic ---
+        document.getElementById('download-btn').addEventListener('click', function (e) {
+            e.preventDefault();
+            if (!APK_URL) {
+                alert("Download link not ready yet. Please wait a moment.");
+                return;
+            }
+            startDownload();
+        });
+
+        function startDownload() {
+            const btn = document.getElementById('download-btn');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar-fill');
+            const progressPercent = document.getElementById('progress-percent');
+            const progressStatus = document.getElementById('progress-status');
+            const progressSpeed = document.getElementById('progress-speed');
+
+            // UI State: Downloading
+            btn.style.display = 'none'; // Hide button
+            progressContainer.style.display = 'block';
+            progressStatus.textContent = translations[currentLang]['downloading'];
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', APK_URL, true);
+            xhr.responseType = 'blob';
+
+            let startTime = Date.now();
+            let previousLoaded = 0;
+
+            xhr.onprogress = function (event) {
+                if (event.lengthComputable) {
+                    const percentComplete = Math.round((event.loaded / event.total) * 100);
+                    progressBar.style.width = percentComplete + '%';
+                    progressPercent.textContent = percentComplete + '%';
+
+                    // Speed calculation
+                    const currentTime = Date.now();
+                    const timeDiff = (currentTime - startTime) / 1000; // seconds
+                    if (timeDiff >= 1) {
+                        const loadedDiff = event.loaded - previousLoaded;
+                        const speed = (loadedDiff / 1024 / 1024).toFixed(2); // MB/s
+                        progressSpeed.textContent = `${speed} MB/s`;
+
+                        startTime = currentTime;
+                        previousLoaded = event.loaded;
                     }
-                } else {
-                    throw new Error("Net Err");
                 }
-            })
-            .catch(err => {
-                console.warn('Size check failed:', err);
-                const sizeEl = document.getElementById('app-size');
-                sizeEl.dataset.error = "true";
-                sizeEl.textContent = translations[currentLang]['unknown'];
-            });
+            };
+
+            xhr.onload = function () {
+                if (this.status === 200) {
+                    // UI State: Complete
+                    progressBar.style.width = '100%';
+                    progressPercent.textContent = '100%';
+                    progressStatus.textContent = translations[currentLang]['savePrompt'];
+
+                    setTimeout(() => {
+                        const blob = this.response;
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        // Name the file
+                        a.download = 'Guevara.B.52.apk';
+                        document.body.appendChild(a);
+                        a.click();
+
+                        window.URL.revokeObjectURL(url);
+
+                        // Reset UI after a delay
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                            btn.style.display = 'flex';
+                            progressBar.style.width = '0%';
+                        }, 3000);
+                    }, 500);
+                } else {
+                    handleError();
+                }
+            };
+
+            xhr.onerror = function () {
+                handleError();
+            };
+
+            function handleError() {
+                progressStatus.textContent = translations[currentLang]['error'];
+                progressStatus.style.color = '#ff3333';
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    btn.style.display = 'flex';
+                    progressStatus.style.color = 'var(--primary)'; // Reset color
+                }, 3000);
+            }
+
+            xhr.send();
+        }
     </script>
 
 </body>
