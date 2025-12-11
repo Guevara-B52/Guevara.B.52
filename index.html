@@ -390,6 +390,13 @@
                 MB/s</div>
         </div>
 
+        <!-- Fallback Link -->
+        <div id="fallback-container" style="margin-top: 1rem; font-size: 0.8rem; display: none;">
+            <a href="#" id="fallback-btn" style="color: #8892b0; text-decoration: underline; cursor: pointer;">
+                <span data-i18n="fallback">Download issue? Open in Browser</span>
+            </a>
+        </div>
+
         <div class="info-grid">
             <div class="info-item">
                 <div class="info-label" data-i18n="platform">Platform</div>
@@ -423,7 +430,8 @@
                 downloading: "Downloading...",
                 complete: "Download Complete!",
                 error: "Download Failed",
-                savePrompt: "Saving File..."
+                savePrompt: "Saving File...",
+                fallback: "Download issue? Open in Browser"
             },
             ar: {
                 badge: "تحميل آمن",
@@ -439,7 +447,8 @@
                 downloading: "جاري التحميل...",
                 complete: "تم التحميل!",
                 error: "فشل التحميل",
-                savePrompt: "جاري حفظ الملف..."
+                savePrompt: "جاري حفظ الملف...",
+                fallback: "مشكلة في التحميل؟ فتح في المتصفح"
             }
         };
 
@@ -602,6 +611,11 @@
         // Initialize
         initAppData();
 
+        // Make fallback visible after a moment or immediately
+        setTimeout(() => {
+            document.getElementById('fallback-container').style.display = 'block';
+        }, 1000);
+
         // Helper to detect Telegram User Agent
         function isTelegram() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
@@ -616,6 +630,13 @@
                 return;
             }
             startDownload();
+        });
+
+        document.getElementById('fallback-btn').addEventListener('click', function (e) {
+            e.preventDefault();
+            if (!APK_URL) return;
+            const cachedBustedUrl = APK_URL + (APK_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
+            window.open(cachedBustedUrl, '_blank');
         });
 
         function startDownload() {
