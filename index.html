@@ -602,6 +602,12 @@
         // Initialize
         initAppData();
 
+        // Helper to detect Telegram User Agent
+        function isTelegram() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            return (ua.indexOf("Telegram") > -1);
+        }
+
         // --- Download Logic ---
         document.getElementById('download-btn').addEventListener('click', function (e) {
             e.preventDefault();
@@ -613,6 +619,13 @@
         });
 
         function startDownload() {
+            // Telegram Fallback: Direct Download to ensure file saving
+            // (Telegram Webview often inhibits Blob saving)
+            if (isTelegram()) {
+                window.location.href = APK_URL;
+                return;
+            }
+
             const btn = document.getElementById('download-btn');
             const progressContainer = document.getElementById('progress-container');
             const progressBar = document.getElementById('progress-bar-fill');
