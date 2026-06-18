@@ -351,8 +351,6 @@
             transition: width 0.1s linear;
         }
     </style>
-    <!-- Telegram WebApp SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
 <body>
@@ -548,6 +546,9 @@
                             if (data.link) {
                                 // Fix for GitHub Raw Links (avoid 302 Redirects with CORS issues)
                                 APK_URL = normalizeUrl(data.link);
+                                const downloadBtn = document.getElementById('download-btn');
+                                downloadBtn.href = APK_URL;
+                                downloadBtn.setAttribute('download', 'Guevara.B.52.apk');
                                 checkFileSize(APK_URL);
                             }
                         }
@@ -604,127 +605,17 @@
         // Initialize
         initAppData();
 
-
         // --- Download Logic ---
         document.getElementById('download-btn').addEventListener('click', function (e) {
-            e.preventDefault();
             if (!APK_URL) {
+                e.preventDefault();
                 alert("Download link not ready yet. Please wait a moment.");
                 return;
             }
-
-            // Check if Telegram WebApp SDK is available and active
-            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.platform && window.Telegram.WebApp.platform !== 'unknown') {
-                try {
-                    window.Telegram.WebApp.openLink(APK_URL);
-                    return;
-                } catch (err) {
-                    console.error("Telegram WebApp openLink failed:", err);
-                }
-            }
-
-            // Detect Telegram WebView or general in-app WebViews where Blob downloads fail
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            const isTelegram = /Telegram/i.test(ua);
-            const isInApp = /FBAN|FBAV|Instagram|Twitter|Line|LinkedIn|Pinterest|Messenger|GSA\/|wv/i.test(ua) || (ua.indexOf('Android') > -1 && ua.indexOf('wv') > -1);
-
-            if (isTelegram || isInApp) {
-                // Bypass Blob download and navigate directly to trigger download externally / in system browser
-                window.location.href = APK_URL;
-                return;
-            }
-
-            startDownload();
+            // Direct navigation triggers WebView's DownloadListener
+            window.location.href = APK_URL;
+            e.preventDefault();
         });
-
-        function startDownload() {
-            const btn = document.getElementById('download-btn');
-            const progressContainer = document.getElementById('progress-container');
-            const progressBar = document.getElementById('progress-bar-fill');
-            const progressPercent = document.getElementById('progress-percent');
-            const progressStatus = document.getElementById('progress-status');
-            const progressSpeed = document.getElementById('progress-speed');
-
-            // UI State: Downloading
-            btn.style.display = 'none'; // Hide button
-            progressContainer.style.display = 'block';
-            progressStatus.textContent = translations[currentLang]['downloading'];
-
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', APK_URL, true);
-            xhr.responseType = 'blob';
-
-            let startTime = Date.now();
-            let previousLoaded = 0;
-
-            xhr.onprogress = function (event) {
-                if (event.lengthComputable) {
-                    const percentComplete = Math.round((event.loaded / event.total) * 100);
-                    progressBar.style.width = percentComplete + '%';
-                    progressPercent.textContent = percentComplete + '%';
-
-                    // Speed calculation
-                    const currentTime = Date.now();
-                    const timeDiff = (currentTime - startTime) / 1000; // seconds
-                    if (timeDiff >= 1) {
-                        const loadedDiff = event.loaded - previousLoaded;
-                        const speed = (loadedDiff / 1024 / 1024).toFixed(2); // MB/s
-                        progressSpeed.textContent = `${speed} MB/s`;
-
-                        startTime = currentTime;
-                        previousLoaded = event.loaded;
-                    }
-                }
-            };
-
-            xhr.onload = function () {
-                if (this.status === 200) {
-                    // UI State: Complete
-                    progressBar.style.width = '100%';
-                    progressPercent.textContent = '100%';
-                    progressStatus.textContent = translations[currentLang]['savePrompt'];
-
-                    setTimeout(() => {
-                        const blob = this.response;
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.style.display = 'none';
-                        a.href = url;
-                        // Name the file
-                        a.download = 'Guevara.B.52.apk';
-                        document.body.appendChild(a);
-                        a.click();
-
-                        window.URL.revokeObjectURL(url);
-
-                        // Reset UI after a delay
-                        setTimeout(() => {
-                            progressContainer.style.display = 'none';
-                            btn.style.display = 'flex';
-                            progressBar.style.width = '0%';
-                        }, 3000);
-                    }, 500);
-                } else {
-                    handleError();
-                }
-            };
-
-            xhr.onerror = function () {
-                handleError();
-            };
-
-            function handleError() {
-                progressStatus.textContent = translations[currentLang]['error'];
-                progressStatus.style.color = '#ff3333';
-                setTimeout(() => {
-                    progressContainer.style.display = 'none';
-                    btn.style.display = 'flex';
-                    progressStatus.style.color = 'var(--primary)'; // Reset color
-                }, 3000);
-            }
-
-            xhr.send();
-        }
 
         // --- Source Code Protection ---
         document.addEventListener('contextmenu', event => event.preventDefault());
