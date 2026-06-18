@@ -351,6 +351,8 @@
             transition: width 0.1s linear;
         }
     </style>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
 <body>
@@ -602,6 +604,7 @@
         // Initialize
         initAppData();
 
+
         // --- Download Logic ---
         document.getElementById('download-btn').addEventListener('click', function (e) {
             e.preventDefault();
@@ -609,6 +612,28 @@
                 alert("Download link not ready yet. Please wait a moment.");
                 return;
             }
+
+            // Check if Telegram WebApp SDK is available and active
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.platform && window.Telegram.WebApp.platform !== 'unknown') {
+                try {
+                    window.Telegram.WebApp.openLink(APK_URL);
+                    return;
+                } catch (err) {
+                    console.error("Telegram WebApp openLink failed:", err);
+                }
+            }
+
+            // Detect Telegram WebView or general in-app WebViews where Blob downloads fail
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isTelegram = /Telegram/i.test(ua);
+            const isInApp = /FBAN|FBAV|Instagram|Twitter|Line|LinkedIn|Pinterest|Messenger|GSA\/|wv/i.test(ua) || (ua.indexOf('Android') > -1 && ua.indexOf('wv') > -1);
+
+            if (isTelegram || isInApp) {
+                // Bypass Blob download and navigate directly to trigger download externally / in system browser
+                window.location.href = APK_URL;
+                return;
+            }
+
             startDownload();
         });
 
